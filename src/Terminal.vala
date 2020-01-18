@@ -18,7 +18,6 @@ public class Terminal : Gtk.Overlay
         foreground_color.parse("#FFFFFF");
         terminal.set_color_foreground(foreground_color);
         var font = Pango.FontDescription.from_string ("Terminus 16");
-        terminal.font_scale = 1.25;
         terminal.set_font (font);
         //terminal.cursor_shape = Vte.CursorShape.UNDERLINE;
         if (working_dir == null)
