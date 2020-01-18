@@ -66,13 +66,10 @@ public class Terminal : Gtk.Overlay
             return copy_clipboard();
         else if (keyname == "Ctrl + Shift + v")
             return paste_clipboard();
-
         else if (keyname == "Ctrl + Shift + q")
             return close_child_terminal ();
         else
             return false;
-
-        return false;
     }
 
     private bool copy_clipboard ()
