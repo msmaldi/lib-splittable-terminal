@@ -81,7 +81,7 @@ public class Terminal : Gtk.Overlay
         return true;
     }
 
-    private bool clipboard_paste ()
+    private bool paste_clipboard ()
     {
         terminal.paste_clipboard ();
         return true;
