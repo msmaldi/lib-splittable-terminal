@@ -18,6 +18,7 @@ public class Terminal : Gtk.Overlay
         foreground_color.parse("#FFFFFF");
         terminal.set_color_foreground(foreground_color);
         var font = Pango.FontDescription.from_string ("Terminus 16");
+        terminal.font_scale = 1.25;
         terminal.set_font (font);
         //terminal.cursor_shape = Vte.CursorShape.UNDERLINE;
         if (working_dir == null)
@@ -61,13 +62,29 @@ public class Terminal : Gtk.Overlay
             return move_child_right();
         else if (keyname == "Ctrl + Shift + ?")
             return debug_list_terminal();
+        else if (keyname == "Ctrl + Shift + c")
+            return copy_clipboard();
+        else if (keyname == "Ctrl + Shift + v")
+            return paste_clipboard();
 
         else if (keyname == "Ctrl + Shift + q")
-            close_child_terminal ();
+            return close_child_terminal ();
         else
             return false;
 
         return false;
+    }
+
+    private bool copy_clipboard ()
+    {
+        terminal.copy_clipboard ();
+        return true;
+    }
+
+    private bool clipboard_paste ()
+    {
+        terminal.paste_clipboard ();
+        return true;
     }
 
     public bool debug_list_terminal()
