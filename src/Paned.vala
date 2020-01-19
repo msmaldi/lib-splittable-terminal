@@ -24,9 +24,19 @@ public class Paned : Gtk.Paned
         position_percent = 0.5;
 
         if (orientation == Gtk.Orientation.HORIZONTAL)
-            set_position((int)((double)alloc.width * position_percent));
+        {
+            int width = (int)((double)alloc.width * position_percent);
+            set_position(width);
+            ((Terminal)child1).set_size_request (width, alloc.height);
+            ((Terminal)child1).set_size_request (-1, -1);
+        }
         else
-            set_position((int)((double)alloc.height * position_percent));
+        {
+            int height = (int)((double)alloc.height * position_percent);
+            set_position(height);
+            ((Terminal)child1).set_size_request (alloc.width, height);
+            ((Terminal)child1).set_size_request (-1, -1);
+        }
     }
 
     public Paned.make (Gtk.Orientation orientation,

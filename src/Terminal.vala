@@ -34,6 +34,7 @@ public class Terminal : Gtk.Overlay
         terminal.key_press_event.connect(on_key_press);
 
         set_size_request (100, 100);
+        set_resize_mode (Gtk.ResizeMode.PARENT);
 
         workspace.list_of_terminals.add(terminal);
         var sw = new Gtk.ScrolledWindow (null, terminal.get_vadjustment ());
