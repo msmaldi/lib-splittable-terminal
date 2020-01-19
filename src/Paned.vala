@@ -35,7 +35,6 @@ public class Paned : Gtk.Paned
     {
         this (orientation, child1, child2);
         this.position_percent = position_percent;
-        set_position(400);
         pack1 (child1, true, false);
         pack2 (child2, true, false);
     }

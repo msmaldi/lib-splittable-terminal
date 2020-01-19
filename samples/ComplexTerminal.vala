@@ -41,7 +41,7 @@ public class SimpleTerminal : Granite.Application {
         stack = new Gtk.Stack ();
         stack_switcher.stack = stack;
 
-        var workspace1 = new Workspace();
+        var workspace1 = new Workspace("w(h(0.5;t('~')|t('~')))");
         stack.add_titled (workspace1, "workspace%d".printf(indice), "Alt + %d".printf(indice));
         indice++;
         stack_switcher.margin_start = 10;
