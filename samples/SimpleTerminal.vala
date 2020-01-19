@@ -19,9 +19,9 @@ public class SimpleTerminal : Gtk.Application
         var gtk_settings = Gtk.Settings.get_default ();
         gtk_settings.gtk_application_prefer_dark_theme = true;
 
-        var workspace = new Workspace("w(h(0.5;t('~')|t('~')))");
-        window.add (workspace);
+        var workspace = new Workspace("w(h(0.5;v(0.5;h(0.5;t('~')|t('~'))|h(0.5;t('~')|t('~')))|v(0.5;h(0.5;t('~')|t('~'))|h(0.5;t('~')|t('~')))))");
 
+        window.add (workspace);
         window.show_all ();
     }
 

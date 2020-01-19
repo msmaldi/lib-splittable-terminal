@@ -24,6 +24,7 @@ public class Workspace : Gtk.Overlay
                 add (new Terminal(this));
             }
         }
+        list_of_terminals[0].grab_focus ();
     }
 
     private void parse_workspace (string workspace_str) throws ParseError
