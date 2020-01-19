@@ -14,9 +14,8 @@ public class SimpleTerminal : Granite.Application {
 
     protected override void activate () {
         var window = new Gtk.ApplicationWindow (this);
-        //var workspace = new Workspace();
 
-        window.set_default_size (1366, 700);
+        window.set_default_size (1000, 700);
 
         var gtk_settings = Gtk.Settings.get_default ();
         gtk_settings.gtk_application_prefer_dark_theme = true;
@@ -41,7 +40,8 @@ public class SimpleTerminal : Granite.Application {
         stack = new Gtk.Stack ();
         stack_switcher.stack = stack;
 
-        var workspace1 = new Workspace("w(h(0.5;t('~')|t('~')))");
+        //var workspace1 = new Workspace("w(h(0.5;t('~')|t('~')))");
+        var workspace1 = new Workspace();
         stack.add_titled (workspace1, "workspace%d".printf(indice), "Alt + %d".printf(indice));
         indice++;
         stack_switcher.margin_start = 10;
@@ -64,6 +64,10 @@ public class SimpleTerminal : Granite.Application {
         window.add (stack);
 
         window.show_all ();
+
+        workspace1.configure ("w(h(0.5;h(0.5;v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~')))|v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~'))))|h(0.5;v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~')))|v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~'))))))");
+        workspace1.show_all ();
+        workspace1.request_resize_all_paned ();
     }
 
     private void btn_clicked ()
@@ -75,6 +79,8 @@ public class SimpleTerminal : Granite.Application {
         indice++;
 
         stack.show_all();
+        workspace.configure ("w(h(0.5;t('~')|t('~')))");
+        workspace.show_all ();
     }
 
     private static int main (string[] args)

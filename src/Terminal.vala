@@ -13,13 +13,14 @@ public class Terminal : Gtk.Overlay
         this.workspace = workspace;
 
         terminal = new Vte.Terminal();
+        workspace.list_of_terminals.add(terminal);
+
         shell = Vte.get_user_shell ();
         Gdk.RGBA foreground_color = Gdk.RGBA ();
         foreground_color.parse("#FFFFFF");
         terminal.set_color_foreground(foreground_color);
         var font = Pango.FontDescription.from_string ("Terminus 16");
         terminal.set_font (font);
-        //terminal.cursor_shape = Vte.CursorShape.UNDERLINE;
         if (working_dir == null)
             working_dir = GLib.Environment.get_home_dir ();
         else if (working_dir == "~")
@@ -33,10 +34,7 @@ public class Terminal : Gtk.Overlay
         }
         terminal.key_press_event.connect(on_key_press);
 
-        set_size_request (100, 100);
-        set_resize_mode (Gtk.ResizeMode.PARENT);
-
-        workspace.list_of_terminals.add(terminal);
+        set_size_request (300, 200);
         var sw = new Gtk.ScrolledWindow (null, terminal.get_vadjustment ());
         sw.add (terminal);
         add(sw);

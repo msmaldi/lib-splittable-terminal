@@ -18,24 +18,21 @@ public class Paned : Gtk.Paned
 
     public Paned.with_allocation (Gtk.Orientation orientation,
                                   Gtk.Allocation alloc,
-                                  Gtk.Widget child1, Gtk.Widget child2)
+                                  Gtk.Widget child1, Gtk.Widget child2,
+                                  double position_percent = 0.5)
     {
         this (orientation, child1, child2);
-        position_percent = 0.5;
+        this.position_percent = position_percent;
 
         if (orientation == Gtk.Orientation.HORIZONTAL)
         {
             int width = (int)((double)alloc.width * position_percent);
             set_position(width);
-            ((Terminal)child1).set_size_request (width, alloc.height);
-            ((Terminal)child1).set_size_request (-1, -1);
         }
         else
         {
             int height = (int)((double)alloc.height * position_percent);
             set_position(height);
-            ((Terminal)child1).set_size_request (alloc.width, height);
-            ((Terminal)child1).set_size_request (-1, -1);
         }
     }
 
@@ -45,8 +42,6 @@ public class Paned : Gtk.Paned
     {
         this (orientation, child1, child2);
         this.position_percent = position_percent;
-        pack1 (child1, true, false);
-        pack2 (child2, true, false);
     }
 
     private new void propagate_draw (Gtk.Container widget, Cairo.Context cr)

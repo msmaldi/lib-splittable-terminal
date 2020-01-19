@@ -3,6 +3,7 @@ using Gee;
 public class Workspace : Gtk.Overlay
 {
     public ArrayList<Vte.Terminal> list_of_terminals { get; construct; }
+    private bool configured = false;
 
     construct
     {
@@ -11,24 +12,37 @@ public class Workspace : Gtk.Overlay
 
     public Workspace(string? workspace_str = null)
     {
-        if (workspace_str == null)
-            add (new Terminal(this));
-        else
+        size_allocate.connect (on_size_allocate);
+    }
+
+    public void configure (string workspace_str)
+    {
+        try
         {
-            try
-            {
-                parse_workspace (workspace_str);
-            }
-            catch
-            {
-                add (new Terminal(this));
-            }
+            parse_workspace (workspace_str);
         }
+        catch
+        {
+            add (new Terminal(this));
+        }
+        request_resize_all_paned ();
+        configured = true;
         list_of_terminals[0].grab_focus ();
+    }
+
+    private void on_size_allocate (Gtk.Allocation alloc)
+    {
+        //if (configured)
+        //    request_resize_all_paned ();
+        //print ("Alloc");
     }
 
     private void parse_workspace (string workspace_str) throws ParseError
     {
+        Gtk.Allocation alloc;
+        get_allocation (out alloc);
+        print ("%d %d\n", alloc.width, alloc.height);
+
         PseudoWorkspace pwk = PseudoWorkspace.parse (workspace_str);
 
         if (pwk.child.get_type().is_a(typeof(PseudoTerminal)))
@@ -39,7 +53,7 @@ public class Workspace : Gtk.Overlay
         else if (pwk.child.get_type().is_a(typeof(PseudoPaned)))
         {
             var pseudo_paned = (PseudoPaned) pwk.child;
-            add (mpaned_make (pseudo_paned));
+            add (mpaned_make (pseudo_paned, alloc));
         }
     }
 
@@ -48,13 +62,30 @@ public class Workspace : Gtk.Overlay
         return new Terminal(this, pseudo_terminal.working_dir);
     }
 
-    private Paned mpaned_make (PseudoPaned pseudo_paned)
+    private Paned mpaned_make (PseudoPaned pseudo_paned, Gtk.Allocation alloc)
     {
         Gtk.Widget child1 = null;
+        Gtk.Allocation alloc_child1 = { 0 };
+        Gtk.Allocation alloc_child2 = { 0 };
+        if (pseudo_paned.orientation == Gtk.Orientation.HORIZONTAL)
+        {
+            alloc_child1.width = (int)((double)alloc.width * pseudo_paned.position_percent);
+            alloc_child1.height = alloc.height;
+            alloc_child2.width = (int)((double)alloc.width * (1 - pseudo_paned.position_percent));
+            alloc_child2.height = alloc.height;
+        }
+        else
+        {
+            alloc_child1.width = alloc.width;
+            alloc_child1.height = (int)((double)alloc.height * pseudo_paned.position_percent);
+            alloc_child2.width = alloc.width;
+            alloc_child2.height = (int)((double)alloc.height * (1 - pseudo_paned.position_percent));
+        }
+
         if (pseudo_paned.child1.get_type().is_a(typeof(PseudoPaned)))
         {
             var pseudo_paned1 = (PseudoPaned)pseudo_paned.child1;
-            child1 = mpaned_make (pseudo_paned1);
+            child1 = mpaned_make (pseudo_paned1, alloc_child1);
         }
         else
         {
@@ -66,7 +97,7 @@ public class Workspace : Gtk.Overlay
         if (pseudo_paned.child2.get_type().is_a(typeof(PseudoPaned)))
         {
             var pseudo_paned2 = (PseudoPaned)pseudo_paned.child2;
-            child2 = mpaned_make (pseudo_paned2);
+            child2 = mpaned_make (pseudo_paned2, alloc_child2);
         }
         else
         {
@@ -74,8 +105,18 @@ public class Workspace : Gtk.Overlay
             child2 = terminal_make (pseudo_terminal);
         }
 
-        var paned = new Paned.make(pseudo_paned.orientation, pseudo_paned.position_percent,
-            child1, child2);
+        Paned paned;
+        //  if (alloc != null)
+        //  {
+        //      print ("%d %d\n", alloc.width, alloc.height);
+            paned = new Paned.with_allocation(pseudo_paned.orientation, alloc,
+                child1, child2, pseudo_paned.position_percent);
+        //  }
+        //  else
+        //  {
+        //      paned = new Paned.make(pseudo_paned.orientation, pseudo_paned.position_percent,
+        //          child1, child2);
+        //  }
 
         return paned;
     }
