@@ -15,11 +15,11 @@ public class Workspace : Gtk.Overlay
         size_allocate.connect (on_size_allocate);
     }
 
-    public void configure (string workspace_str)
+    public void configure (string workspace_str, Gtk.Allocation alloc)
     {
         try
         {
-            parse_workspace (workspace_str);
+            parse_workspace (workspace_str, alloc);
         }
         catch
         {
@@ -37,10 +37,10 @@ public class Workspace : Gtk.Overlay
         //print ("Alloc");
     }
 
-    private void parse_workspace (string workspace_str) throws ParseError
+    private void parse_workspace (string workspace_str, Gtk.Allocation alloc) throws ParseError
     {
-        Gtk.Allocation alloc;
-        get_allocation (out alloc);
+        //  Gtk.Allocation alloc;
+        //  get_allocation (out alloc);
         print ("%d %d\n", alloc.width, alloc.height);
 
         PseudoWorkspace pwk = PseudoWorkspace.parse (workspace_str);
