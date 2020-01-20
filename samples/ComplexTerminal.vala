@@ -65,7 +65,10 @@ public class SimpleTerminal : Granite.Application {
 
         window.show_all ();
 
-        workspace1.configure ("w(h(0.5;h(0.5;v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~')))|v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~'))))|h(0.5;v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~')))|v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~'))))))");
+        Gtk.Allocation alloc;
+        stack.get_allocation (out alloc);
+
+        workspace1.configure ("w(h(0.5;h(0.5;v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~')))|v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~'))))|h(0.5;v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~')))|v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~'))))))", alloc);
         workspace1.show_all ();
         workspace1.request_resize_all_paned ();
     }
@@ -79,8 +82,10 @@ public class SimpleTerminal : Granite.Application {
         indice++;
 
         stack.show_all();
-        workspace.configure ("w(h(0.5;t('~')|t('~')))");
-        workspace.show_all ();
+        Gtk.Allocation alloc;
+        workspace.get_allocation (out alloc);
+        workspace.show ();
+        workspace.configure ("w(h(0.5;t('~')|t('~')))", alloc);
     }
 
     private static int main (string[] args)
