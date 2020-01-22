@@ -15,7 +15,6 @@ public class Workspace : Gtk.Overlay
         list_of_terminals = new ArrayList<Vte.Terminal>();
         minimal_terminal_width = 300;
         minimal_terminal_height = 200;
-        delete_event.connect (on_delete_event);
     }
 
     public Workspace()
