@@ -38,10 +38,6 @@ public class Workspace : Gtk.Overlay
 
     private void parse_workspace (string workspace_str, Gtk.Allocation alloc) throws ParseError
     {
-        //  Gtk.Allocation alloc;
-        //  get_allocation (out alloc);
-        print ("%d %d\n", alloc.width, alloc.height);
-
         PseudoWorkspace pwk = PseudoWorkspace.parse (workspace_str);
 
         if (pwk.child.get_type().is_a(typeof(PseudoTerminal)))
