@@ -4,18 +4,25 @@ public class Workspace : Gtk.Overlay
 {
     public ArrayList<Vte.Terminal> list_of_terminals { get; construct; }
     private bool configured = false;
+    public int minimal_terminal_width { get; protected set; }
+    public int minimal_terminal_height { get; protected set; }
+
+    public signal void configuration_changed ();
+    public signal void split_failed ();
 
     construct
     {
         list_of_terminals = new ArrayList<Vte.Terminal>();
+        minimal_terminal_width = 300;
+        minimal_terminal_height = 200;
+        delete_event.connect (on_delete_event);
     }
 
-    public Workspace(string? workspace_str = null)
+    public Workspace()
     {
-        size_allocate.connect (on_size_allocate);
     }
 
-    public void configure (string workspace_str, Gtk.Allocation alloc)
+    public void configure (string workspace_str, Gtk.Allocation alloc = { 0, 0, 1, 1 })
     {
         try
         {
@@ -27,15 +34,8 @@ public class Workspace : Gtk.Overlay
         }
         request_resize_all_paned ();
         configured = true;
-        list_of_terminals[0].grab_focus ();
     }
 
-    private void on_size_allocate (Gtk.Allocation alloc)
-    {
-        //if (configured)
-        //    request_resize_all_paned ();
-        //print ("Alloc");
-    }
 
     private void parse_workspace (string workspace_str, Gtk.Allocation alloc) throws ParseError
     {
@@ -105,18 +105,9 @@ public class Workspace : Gtk.Overlay
             child2 = terminal_make (pseudo_terminal);
         }
 
-        Paned paned;
-        //  if (alloc != null)
-        //  {
-        //      print ("%d %d\n", alloc.width, alloc.height);
-            paned = new Paned.with_allocation(pseudo_paned.orientation, alloc,
+        Paned paned = new Paned.with_allocation(this,
+                pseudo_paned.orientation, alloc,
                 child1, child2, pseudo_paned.position_percent);
-        //  }
-        //  else
-        //  {
-        //      paned = new Paned.make(pseudo_paned.orientation, pseudo_paned.position_percent,
-        //          child1, child2);
-        //  }
 
         return paned;
     }

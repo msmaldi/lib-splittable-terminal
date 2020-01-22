@@ -5,8 +5,8 @@ public class Terminal : Gtk.Overlay
     Workspace workspace;
     Vte.Terminal terminal;
     GLib.Pid child_pid;
-
     public string shell;
+    string? working_dir;
 
     public Terminal (Workspace workspace, string? working_dir = null)
     {
@@ -22,19 +22,27 @@ public class Terminal : Gtk.Overlay
         var font = Pango.FontDescription.from_string ("Terminus 16");
         terminal.set_font (font);
         if (working_dir == null)
-            working_dir = GLib.Environment.get_home_dir ();
+            this.working_dir = GLib.Environment.get_home_dir ();
         else if (working_dir == "~")
-            working_dir = GLib.Environment.get_home_dir ();
+            this.working_dir = GLib.Environment.get_home_dir ();
+        else if (working_dir.has_prefix("~"))
+        {
+            string remove_tilda = working_dir.substring (1);
+            this.working_dir = "%s%s".printf(GLib.Environment.get_home_dir (), remove_tilda);
+        }
+        else
+            this.working_dir = working_dir;
         try
         {
-            terminal.spawn_sync(Vte.PtyFlags.DEFAULT, working_dir, { shell } , null, SpawnFlags.SEARCH_PATH, null, out child_pid, null);
+            terminal.spawn_sync(Vte.PtyFlags.DEFAULT, this.working_dir, { shell } , null, SpawnFlags.SEARCH_PATH, null, out child_pid, null);
         }
         catch(Error e)
         {
         }
+
         terminal.key_press_event.connect(on_key_press);
 
-        set_size_request (300, 200);
+        set_size_request (workspace.minimal_terminal_width, workspace.minimal_terminal_height);
         var sw = new Gtk.ScrolledWindow (null, terminal.get_vadjustment ());
         sw.add (terminal);
         add(sw);
@@ -316,6 +324,7 @@ public class Terminal : Gtk.Overlay
         ((Gtk.Container) parent_of_paned).remove (parent_paned);
         ((Gtk.Container) parent_of_paned).add (child_not_deleted);
         workspace.show_all ();
+        workspace.configuration_changed ();
 
         if (child_not_deleted.get_type().is_a(typeof(Terminal)))
         {
@@ -346,18 +355,43 @@ public class Terminal : Gtk.Overlay
         return true;
     }
 
+    private bool can_split (Gtk.Orientation orientation, Gtk.Allocation alloc)
+    {
+        if (orientation == Gtk.Orientation.HORIZONTAL)
+        {
+            if ((alloc.width * 0.5) < workspace.minimal_terminal_width)
+                return false;
+            else
+                return true;
+        }
+        else
+        {
+            if ((alloc.height * 0.5) < workspace.minimal_terminal_height)
+                return false;
+            else
+                return true;
+        }
+    }
+
     public bool split (Gtk.Orientation orientation, bool focus_on_child)
     {
         Gtk.Allocation alloc;
         get_allocation(out alloc);
 
+        if (!can_split (orientation, alloc))
+        {
+            workspace.split_failed ();
+            return true;
+        }
+
         Gtk.Widget parent_widget = get_parent();
         ((Gtk.Container) parent_widget).remove(this);
         var new_terminal = new Terminal(workspace);
 
-        var paned = new Paned.with_allocation (orientation, alloc, this, new_terminal);
+        var paned = new Paned.with_allocation (workspace, orientation, alloc, this, new_terminal);
         ((Gtk.Container) parent_widget).add(paned);
         workspace.show_all ();
+        workspace.configuration_changed();
 
         if (focus_on_child)
             new_terminal.terminal.grab_focus ();

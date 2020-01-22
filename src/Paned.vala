@@ -4,11 +4,14 @@ public class Paned : Gtk.Paned
     // Percent is a double where 1.0 is 100%
     private double position_percent;
     private bool is_button_press = false;
+    private Workspace workspace;
 
-    private Paned (Gtk.Orientation orientation,
+    private Paned (Workspace workspace,
+                   Gtk.Orientation orientation,
                    Gtk.Widget child1, Gtk.Widget child2)
     {
         Object (orientation: orientation);
+        this.workspace = workspace;
         draw.connect(on_draw);
         button_release_event.connect(button_release);
         button_press_event.connect(button_press);
@@ -16,12 +19,13 @@ public class Paned : Gtk.Paned
         pack2 (child2, true, false);
     }
 
-    public Paned.with_allocation (Gtk.Orientation orientation,
+    public Paned.with_allocation (Workspace workspace,
+                                  Gtk.Orientation orientation,
                                   Gtk.Allocation alloc,
                                   Gtk.Widget child1, Gtk.Widget child2,
                                   double position_percent = 0.5)
     {
-        this (orientation, child1, child2);
+        this (workspace, orientation, child1, child2);
         this.position_percent = position_percent;
 
         if (orientation == Gtk.Orientation.HORIZONTAL)
@@ -36,14 +40,6 @@ public class Paned : Gtk.Paned
         }
     }
 
-    public Paned.make (Gtk.Orientation orientation,
-                       double position_percent,
-                       Gtk.Widget child1, Gtk.Widget child2)
-    {
-        this (orientation, child1, child2);
-        this.position_percent = position_percent;
-    }
-
     private new void propagate_draw (Gtk.Container widget, Cairo.Context cr)
     {
         if (widget.get_children().length() > 0)
@@ -54,7 +50,7 @@ public class Paned : Gtk.Paned
     private bool on_draw (Gtk.Widget widget, Cairo.Context cr)
     {
         var paned_widget = (Paned) widget;
-        propagate_draw(paned_widget, cr);
+        propagate_draw (paned_widget, cr);
 
         if (!is_button_press)
             update_position ();
@@ -75,9 +71,11 @@ public class Paned : Gtk.Paned
         get_allocation(out alloc);
 
         if (orientation == Gtk.Orientation.HORIZONTAL)
-            position_percent =  (double)get_position() / (double)alloc.width;
+            position_percent = (double)get_position() / (double)alloc.width;
         else
             position_percent = (double)get_position() / (double)alloc.height;
+
+        workspace.configuration_changed();
 
         return true;
     }

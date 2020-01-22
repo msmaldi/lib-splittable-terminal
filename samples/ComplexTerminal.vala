@@ -11,6 +11,7 @@ public class SimpleTerminal : Granite.Application {
 
     Gtk.Stack stack;
     int indice = 1;
+    Workspace workspace1;
 
     protected override void activate () {
         var window = new Gtk.ApplicationWindow (this);
@@ -41,7 +42,7 @@ public class SimpleTerminal : Granite.Application {
         stack_switcher.stack = stack;
 
         //var workspace1 = new Workspace("w(h(0.5;t('~')|t('~')))");
-        var workspace1 = new Workspace();
+        workspace1 = new Workspace();
         stack.add_titled (workspace1, "workspace%d".printf(indice), "Alt + %d".printf(indice));
         indice++;
         stack_switcher.margin_start = 10;
@@ -66,26 +67,30 @@ public class SimpleTerminal : Granite.Application {
         window.show_all ();
 
         Gtk.Allocation alloc;
-        stack.get_allocation (out alloc);
+        window.get_allocation (out alloc);
 
-        workspace1.configure ("w(h(0.5;h(0.5;v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~')))|v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~'))))|h(0.5;v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~')))|v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~'))))))", alloc);
+        workspace1.configure ("w(h(0.5;h(0.5;v(0.5;v(0.5;t('~/Downloads')|t('~'))|v(0.5;t('~')|t('~')))|v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~'))))|h(0.5;v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~')))|v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~'))))))");
         workspace1.show_all ();
         workspace1.request_resize_all_paned ();
+        workspace1.configuration_changed.connect (workspace_changed);
+    }
+
+    private void workspace_changed ()
+    {
+        print ("%s\n", workspace1.to_compact_string());
     }
 
     private void btn_clicked ()
     {
         if (indice > 10)
             return;
-        var workspace = new Workspace("w(h(0.5;t('~')|t('~')))");
+        var workspace = new Workspace();
         stack.add_titled (workspace, "workspace%d".printf(indice % 10), "Alt + %d".printf(indice % 10));
         indice++;
 
         stack.show_all();
-        Gtk.Allocation alloc;
-        workspace.get_allocation (out alloc);
-        workspace.show ();
-        workspace.configure ("w(h(0.5;t('~')|t('~')))", alloc);
+        workspace.configure ("w(h(0.5;t('~')|t('~')))");
+        workspace.show_all ();
     }
 
     private static int main (string[] args)
