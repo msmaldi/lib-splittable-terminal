@@ -2,7 +2,7 @@ using Gee;
 
 public class Terminal : Gtk.Overlay
 {
-    Workspace workspace;
+    unowned Workspace workspace;
     Vte.Terminal terminal;
     GLib.Pid child_pid;
     public string shell;
