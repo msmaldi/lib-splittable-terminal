@@ -4,7 +4,7 @@ public class Paned : Gtk.Paned
     // Percent is a double where 1.0 is 100%
     private double position_percent;
     private bool is_button_press = false;
-    private Workspace workspace;
+    private unowned Workspace workspace;
 
     private Paned (Workspace workspace,
                    Gtk.Orientation orientation,

@@ -12,9 +12,10 @@ public class SimpleTerminal : Granite.Application {
     Gtk.Stack stack;
     int indice = 1;
     Workspace workspace1;
+    Gtk.ApplicationWindow window;
 
     protected override void activate () {
-        var window = new Gtk.ApplicationWindow (this);
+        window = new Gtk.ApplicationWindow (this);
 
         window.set_default_size (1000, 700);
 
@@ -43,6 +44,7 @@ public class SimpleTerminal : Granite.Application {
 
         //var workspace1 = new Workspace("w(h(0.5;t('~')|t('~')))");
         workspace1 = new Workspace();
+        stack.set_transition_type (Gtk.StackTransitionType.CROSSFADE);
         stack.add_titled (workspace1, "workspace%d".printf(indice), "Alt + %d".printf(indice));
         indice++;
         stack_switcher.margin_start = 10;
@@ -88,8 +90,12 @@ public class SimpleTerminal : Granite.Application {
         stack.add_titled (workspace, "workspace%d".printf(indice % 10), "Alt + %d".printf(indice % 10));
         indice++;
 
+        Gtk.Allocation alloc;
+        window.get_allocation (out alloc);
+
         stack.show_all();
-        workspace.configure ("w(h(0.5;t('~')|t('~')))");
+        workspace.configure ("w(h(0.5;t('~')|t('~')))", alloc);
+        workspace1.request_resize_all_paned ();
         workspace.show_all ();
     }
 

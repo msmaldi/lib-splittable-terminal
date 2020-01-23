@@ -21,7 +21,7 @@ public class Workspace : Gtk.Overlay
     {
     }
 
-    public void configure (string workspace_str, Gtk.Allocation alloc = { 0, 0, 1, 1 })
+    public void configure (string workspace_str, Gtk.Allocation alloc = { 0, 0, 1000, 1000 })
     {
         try
         {
@@ -62,6 +62,9 @@ public class Workspace : Gtk.Overlay
         Gtk.Widget child1 = null;
         Gtk.Allocation alloc_child1 = { 0 };
         Gtk.Allocation alloc_child2 = { 0 };
+
+        print ("Paned %d %d\n", alloc.width, alloc.height);
+
         if (pseudo_paned.orientation == Gtk.Orientation.HORIZONTAL)
         {
             alloc_child1.width = (int)((double)alloc.width * pseudo_paned.position_percent);

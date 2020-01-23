@@ -2,11 +2,11 @@ using Gee;
 
 public class Terminal : Gtk.Overlay
 {
-    unowned Workspace workspace;
-    Vte.Terminal terminal;
-    GLib.Pid child_pid;
-    public string shell;
-    string? working_dir;
+    private unowned Workspace workspace;
+    private Vte.Terminal terminal;
+    private GLib.Pid child_pid;
+    private string shell;
+    private string working_dir;
 
     public Terminal (Workspace workspace, string? working_dir = null)
     {
