@@ -2,7 +2,7 @@ public class Paned : Gtk.Paned
 {
     // Sets the position of the divider between the two panes.
     // Percent is a double where 1.0 is 100%
-    private double position_percent;
+    public double position_percent { get; private set; }
     private bool is_button_press = false;
     private unowned Workspace workspace;
 
@@ -12,17 +12,17 @@ public class Paned : Gtk.Paned
     {
         Object (orientation: orientation);
         this.workspace = workspace;
-        draw.connect(on_draw);
-        button_release_event.connect(button_release);
-        button_press_event.connect(button_press);
+        draw.connect (on_draw);
+        button_release_event.connect (button_release);
+        button_press_event.connect (button_press);
         pack1 (child1, true, false);
         pack2 (child2, true, false);
     }
 
     public Paned.with_allocation (Workspace workspace,
                                   Gtk.Orientation orientation,
-                                  Gtk.Allocation alloc,
                                   Gtk.Widget child1, Gtk.Widget child2,
+                                  Gtk.Allocation alloc = { 0, 0, 1, 1 },
                                   double position_percent = 0.5)
     {
         this (workspace, orientation, child1, child2);
@@ -31,20 +31,20 @@ public class Paned : Gtk.Paned
         if (orientation == Gtk.Orientation.HORIZONTAL)
         {
             int width = (int)((double)alloc.width * position_percent);
-            set_position(width);
+            set_position (width);
         }
         else
         {
             int height = (int)((double)alloc.height * position_percent);
-            set_position(height);
+            set_position (height);
         }
     }
 
     private new void propagate_draw (Gtk.Container widget, Cairo.Context cr)
     {
-        if (widget.get_children().length() > 0)
-            foreach (Gtk.Widget child in widget.get_children())
-                widget.propagate_draw(child, cr);
+        if (widget.get_children ().length () > 0)
+            foreach (Gtk.Widget child in widget.get_children ())
+                widget.propagate_draw (child, cr);
     }
 
     private bool on_draw (Gtk.Widget widget, Cairo.Context cr)
@@ -68,14 +68,14 @@ public class Paned : Gtk.Paned
     {
         is_button_press = false;
         Gtk.Allocation alloc;
-        get_allocation(out alloc);
+        get_allocation (out alloc);
 
         if (orientation == Gtk.Orientation.HORIZONTAL)
-            position_percent = (double)get_position() / (double)alloc.width;
+            position_percent = (double)get_position () / (double)alloc.width;
         else
-            position_percent = (double)get_position() / (double)alloc.height;
+            position_percent = (double)get_position () / (double)alloc.height;
 
-        workspace.configuration_changed();
+        workspace.configuration_changed ();
 
         return true;
     }
@@ -83,12 +83,12 @@ public class Paned : Gtk.Paned
     public void update_position ()
     {
         Gtk.Allocation alloc;
-        get_allocation(out alloc);
+        get_allocation (out alloc);
 
         int correct_position = orientation == Gtk.Orientation.HORIZONTAL ?
             (int)(alloc.width * position_percent) : (int)(alloc.height * position_percent);
-        while (correct_position != get_position())
-            set_position(correct_position);
+        while (correct_position != get_position ())
+            set_position (correct_position);
     }
 
     public string to_compact_string ()
@@ -96,26 +96,28 @@ public class Paned : Gtk.Paned
         var child1 = get_child1 ();
         var child2 = get_child2 ();
 
-        var sb = new StringBuilder();
+        var sb = new StringBuilder ();
 
         if (orientation == Gtk.Orientation.HORIZONTAL)
-            sb.append("h(");
+            sb.append ("h(");
         else
-            sb.append("v(");
+            sb.append ("v(");
 
-        sb.append_printf("%s;", position_percent.to_string());
+        // dont try append_printf("%.6lf;", position_percent);
+        // because somes localization use ',' instead of '.'
+        sb.append_printf ("%.8s;", position_percent.to_string ());
 
-        if (child1.get_type().is_a(typeof(Paned)))
-            sb.append(((Paned)child1).to_compact_string());
-        else if (child1.get_type().is_a(typeof(Terminal)))
-            sb.append(((Terminal)child1).to_compact_string());
+        if (child1.get_type ().is_a (typeof (Paned)))
+            sb.append (((Paned)child1).to_compact_string ());
+        else if (child1.get_type ().is_a (typeof (Terminal)))
+            sb.append (((Terminal)child1).to_compact_string ());
 
-        sb.append("|");
+        sb.append ("|");
 
-        if (child2.get_type().is_a(typeof(Paned)))
-            sb.append(((Paned)child2).to_compact_string());
-        else if (child2.get_type().is_a(typeof(Terminal)))
-            sb.append(((Terminal)child2).to_compact_string());
+        if (child2.get_type ().is_a (typeof (Paned)))
+            sb.append (((Paned)child2).to_compact_string ());
+        else if (child2.get_type ().is_a (typeof (Terminal)))
+            sb.append (((Terminal)child2).to_compact_string ());
 
         sb.append (")");
         return sb.str;

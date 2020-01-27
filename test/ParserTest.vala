@@ -11,7 +11,7 @@ int main ()
     }
     catch (ParseError e)
     {
-        print ("Quark: %s\n%s\n", e.domain.to_string(), e.message);
+        print ("%s\n", e.message);
         return 1;
     }
 

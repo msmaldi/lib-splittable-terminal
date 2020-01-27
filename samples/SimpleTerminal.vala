@@ -5,7 +5,7 @@ public class SimpleTerminal : Gtk.Application
 
     public SimpleTerminal ()
     {
-        Object(
+        Object (
             application_id: "com.github.msmaldi.simple-terminal",
             flags: ApplicationFlags.FLAGS_NONE
         );
@@ -19,7 +19,7 @@ public class SimpleTerminal : Gtk.Application
         var gtk_settings = Gtk.Settings.get_default ();
         gtk_settings.gtk_application_prefer_dark_theme = true;
 
-        var workspace = new Workspace();
+        var workspace = new Workspace ("w(h(0.5;t('~')|t('~')))");
 
         window.add (workspace);
         window.show_all ();

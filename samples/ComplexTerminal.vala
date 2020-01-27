@@ -1,9 +1,11 @@
 using Gee;
 
-public class SimpleTerminal : Granite.Application {
+public class ComplexTerminal : Granite.Application
+{
 
-    public SimpleTerminal () {
-        Object(
+    public ComplexTerminal ()
+    {
+        Object (
             application_id: "com.github.terminal",
             flags: ApplicationFlags.FLAGS_NONE
         );
@@ -14,7 +16,8 @@ public class SimpleTerminal : Granite.Application {
     Workspace workspace1;
     Gtk.ApplicationWindow window;
 
-    protected override void activate () {
+    protected override void activate ()
+    {
         window = new Gtk.ApplicationWindow (this);
 
         window.set_default_size (1000, 700);
@@ -27,8 +30,8 @@ public class SimpleTerminal : Granite.Application {
         headerbar.show_close_button = true;
 
         var add_button = new Gtk.Button.with_label ("Add");
-        add_button.get_style_context().add_class ("suggested-action");
-        add_button.clicked.connect(btn_clicked);
+        add_button.get_style_context ().add_class ("suggested-action");
+        add_button.clicked.connect (btn_clicked);
 
         add_button.valign = Gtk.Align.CENTER;
         add_button.margin_start = 10;
@@ -42,10 +45,9 @@ public class SimpleTerminal : Granite.Application {
         stack = new Gtk.Stack ();
         stack_switcher.stack = stack;
 
-        //var workspace1 = new Workspace("w(h(0.5;t('~')|t('~')))");
-        workspace1 = new Workspace();
+        workspace1 = new Workspace ("w(h(0.5;v(0.666666;v(0.5;t('~/Documents')|t('~/Music'))|t('~/Public'))|v(0.666666;v(0.5;t('~/Downloads')|t('~/Pictures'))|t('~/Videos'))))");
         stack.set_transition_type (Gtk.StackTransitionType.CROSSFADE);
-        stack.add_titled (workspace1, "workspace%d".printf(indice), "Alt + %d".printf(indice));
+        stack.add_titled (workspace1, "workspace%d".printf (indice), "Alt + %d".printf (indice));
         indice++;
         stack_switcher.margin_start = 10;
         stack_switcher.margin_top = 10;
@@ -71,37 +73,37 @@ public class SimpleTerminal : Granite.Application {
         Gtk.Allocation alloc;
         window.get_allocation (out alloc);
 
-        workspace1.configure ("w(h(0.5;h(0.5;v(0.5;v(0.5;t('~/Downloads')|t('~'))|v(0.5;t('~')|t('~')))|v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~'))))|h(0.5;v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~')))|v(0.5;v(0.5;t('~')|t('~'))|v(0.5;t('~')|t('~'))))))");
         workspace1.show_all ();
         workspace1.request_resize_all_paned ();
         workspace1.configuration_changed.connect (workspace_changed);
+
+        workspace1.list_of_terminals[0].grab_focus ();
     }
 
     private void workspace_changed ()
     {
-        print ("%s\n", workspace1.to_compact_string());
+        print ("%s\n", workspace1.to_compact_string ());
     }
 
     private void btn_clicked ()
     {
         if (indice > 10)
             return;
-        var workspace = new Workspace();
-        stack.add_titled (workspace, "workspace%d".printf(indice % 10), "Alt + %d".printf(indice % 10));
+        var workspace = new Workspace ("w(h(0.5;t('~')|t('~')))");
+        stack.add_titled (workspace, "workspace%d".printf (indice % 10), "Alt + %d".printf (indice % 10));
         indice++;
 
         Gtk.Allocation alloc;
         window.get_allocation (out alloc);
 
-        stack.show_all();
-        workspace.configure ("w(h(0.5;t('~')|t('~')))", alloc);
+        stack.show_all ();
         workspace1.request_resize_all_paned ();
         workspace.show_all ();
     }
 
     private static int main (string[] args)
     {
-        var app = new SimpleTerminal ();
+        var app = new ComplexTerminal ();
         return app.run (args);
     }
 }
