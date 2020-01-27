@@ -416,7 +416,7 @@ public class Terminal : Gtk.Overlay
 
         Gtk.Widget parent_widget = get_parent ();
         ((Gtk.Container)parent_widget).remove (this);
-        var new_terminal = new Terminal (workspace);
+        var new_terminal = new Terminal (workspace, this.get_shell_location());
 
         var paned = new Paned.with_allocation (workspace, orientation, this, new_terminal, alloc);
         ((Gtk.Container) parent_widget).add (paned);
