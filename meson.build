@@ -6,6 +6,14 @@ gobject = dependency('gobject-2.0')
 gtk = dependency('gtk+-3.0')
 vte = dependency('vte-2.91')
 
+vala_lint_conf = join_paths(meson.source_root(), 'vala-lint.conf')
+vala_lint = find_program('io.elementary.vala-lint')
+if (vala_lint.found())
+    test ('Vala Lint', vala_lint,
+        args: [ '-c', vala_lint_conf, meson.source_root() ]
+    )
+endif
+
 splittable_terminal_deps = [
     gee,
     glib,
@@ -18,6 +26,7 @@ splittable_terminal_sources = [
     'src/Paned.vala',
     'src/Parser.vala',
     'src/Terminal.vala',
+    'src/TerminalSetting.vala',
     'src/Workspace.vala',
 ]
 
